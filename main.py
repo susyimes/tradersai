@@ -7,7 +7,7 @@ url = "https://data-api.binance.vision/api/v3/klines"
 params = {
     "symbol": "BTCUSDT",
     "interval": "1h",
-    "limit": 48
+    "limit": 72
 }
 
 response = requests.get(url, params=params)
@@ -79,13 +79,13 @@ data['MACD'] = ema12 - ema26
 data['MACD_Signal'] = data['MACD'].ewm(span=9, adjust=False).mean()
 
 # 4. 打印整齐的表格 (选择部分指标)
-header = (f"{'Open Time':20} {'Open':10} {'Volume':12} {'SMA20':10} {'EMA20':10} "
-          f"{'UpperBand':10} {'LowerBand':10} {'%K':10} {'%D':10} {'VWAP':10} "
+header = (f"{'Open Time':25} {'Open':12} {'Close':12} {'Volume':12} {'SMA20':12} {'EMA20':12} "
+          f"{'%K':10} {'%D':10} {'UpperBand':12} {'LowerBand':12}  {'VWAP':12} "
           f"{'ATR':10} {'RSI':10} {'MACD':10} {'MACD_Sig':10}")
 print(header)
 print("-" * len(header))
 
-for index, row in data.tail(24).iterrows():
+for index, row in data.tail(48).iterrows():
     open_time_str = row['Open Time'].strftime('%Y-%m-%d %H:%M')
 
     # 格式化数字，NaN值处理
@@ -100,7 +100,8 @@ for index, row in data.tail(24).iterrows():
     rsi_str = f"{row['RSI']:.2f}" if pd.notna(row['RSI']) else "N/A"
     macd_str = f"{row['MACD']:.2f}" if pd.notna(row['MACD']) else "N/A"
     macd_signal_str = f"{row['MACD_Signal']:.2f}" if pd.notna(row['MACD_Signal']) else "N/A"
+    volume_str = f"{row['Volume']:.2f}"
 
-    print(f"{open_time_str:20} {row['Open']:10.2f} {row['Volume']:12.2f} {sma20_str:10} "
-          f"{ema20_str:10} {k_str:10} {d_str:10} {upper_band_str:10} {lower_band_str:10}"
-          f"{vwap_str:10} {atr_str:10} {rsi_str:10} {macd_str:10} {macd_signal_str:10}")
+    print(f"{open_time_str:25} {row['Open']:<12} {row['Close']:<12} {volume_str:12} {sma20_str:12} {ema20_str:12} "
+          f"{k_str:10} {d_str:10} {upper_band_str:12} {lower_band_str:12} {vwap_str:12}"
+          f" {atr_str:10} {rsi_str:10} {macd_str:10} {macd_signal_str:10}")
